@@ -1,0 +1,18 @@
+# Virtual environments
+.venv/
+
+
+# Build / install metadata
+*.egg-info/
+build/
+dist/
+*.egg
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.pyo
+
+
+# OS / editor
+.vscode/
