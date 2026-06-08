@@ -5,22 +5,22 @@ Scikit-learn-native model selection for PCA.
 
 Public API
 ----------
-* :class:`PCACV`   -- a ``*CV``-style self-validating PCA transformer that
+* `PCACV` -- a `*CV`-style self-validating PCA transformer that
   chooses the number of components by cross-validated PRESS. Supports
-  row-wise (``rkf``), closed-form element-wise (``ekf``), corrected
-  element-wise (``cekf``) and EM missing-data (``em``) validation. After
-  fitting it behaves as a fitted PCA (``transform``/``inverse_transform``).
+  row-wise (`rkf`), closed-form element-wise (`ekf`), corrected
+  element-wise (`cekf`) and EM missing-data (`em`) validation. After
+  fitting it behaves as a fitted PCA (`transform`/`inverse_transform`).
 
 Conventions
 -----------
-``PCACV`` follows the scikit-learn ``RidgeCV``/``LassoCV`` pattern: the
+`PCACV` follows the scikit-learn `RidgeCV`/`LassoCV` pattern: the
 cross-validation is internal, the chosen hyper-parameter is exposed as
-``n_components_``, and (when ``refit=True``) the model is refit on the full
+`n_components_`, and (when `refit=True`) the model is refit on the full
 data and exposed through the transformer interface. Splitting is delegated to
 scikit-learn splitters; PCA mean-centers internally as usual. Preprocessing is
 owned by the estimator and refit inside every fold (no leakage): pass any
-transformer (or transformer ``Pipeline``) via ``preprocessor``, or use the
-``scale`` shortcut for unit-variance scaling. PRESS is the only selection
+transformer (or transformer `Pipeline`) via `preprocessor`, or use the
+`scale` shortcut for unit-variance scaling. PRESS is the only selection
 criterion.
 
 References
@@ -55,7 +55,7 @@ def _empca(Xp: np.ndarray, n_components: int,
     """
     EM (iterative-imputation) PCA reconstruction of a centered/scaled matrix
     containing NaNs. Missing entries are filled with 0 (the centered mean),
-    PCA is refit, missing entries are replaced by the rank-``n_components``
+    PCA is refit, missing entries are replaced by the rank-`n_components`
     reconstruction, and the loop repeats to convergence. This is the
     least-squares missing-data fit underlying the EM cross-validation of
     Bro et al. (2008). Returns the full reconstruction.
@@ -90,67 +90,67 @@ class PCACV(TransformerMixin, BaseEstimator):
     r"""
     PCA with cross-validated selection of the number of components.
 
-    A ``*CV``-style estimator: cross-validation is internal, the selected
-    component count is exposed as ``n_components_``, and (with ``refit=True``)
-    the estimator behaves as a fitted PCA transformer over ``n_components_``
+    A `*CV`-style estimator: cross-validation is internal, the selected
+    component count is exposed as `n_components_`, and (with `refit=True`)
+    the estimator behaves as a fitted PCA transformer over `n_components_`
     components.
 
     Parameters
     ----------
     n_components_values : iterable of int or None, default None
         Candidate component counts (>= 1). If None, uses
-        ``range(1, max_feasible + 1)``.
+        `range(1, max_feasible + 1)`.
     val_procedure : {'rkf', 'ekf', 'cekf', 'em'}, default 'rkf'
         Cross-validation criterion:
 
-        - ``'rkf'``  : row-wise k-fold. Whole samples are held out and
+        - `'rkf'`  : row-wise k-fold. Whole samples are held out and
           reconstructed. The held-out scores use the held-out samples
           themselves, so the PRESS curve is (near-)monotone in the number of
           components and has no interior minimum -- combine with
-          ``selection='1se'`` or inspect ``cv_results_``.
-        - ``'ekf'``  : closed-form element-wise k-fold with the trimmed-score
+          `selection='1se'` or inspect `cv_results_`.
+        - `'ekf'`  : closed-form element-wise k-fold with the trimmed-score
           (direct) imputation correction (Camacho & Ferrer 2012). Cheap.
-        - ``'cekf'`` : corrected element-wise k-fold (Camacho & Ferrer 2014).
+        - `'cekf'` : corrected element-wise k-fold (Camacho & Ferrer 2014).
           Augments the calibration block with the model reconstruction of the
           held-out variables, refits PCA, and predicts. Recovers
           non-redundant information; valley-shaped PRESS. Expensive.
-        - ``'em'``   : element-wise EM missing-data cross-validation
+        - `'em'`   : element-wise EM missing-data cross-validation
           (Bro et al. 2008). Held-out element blocks are imputed by a
           least-squares PCA fit that excludes them, so predictions are
           independent of the predicted entity. Preprocessing is recomputed
           inside each fold from observed entries only.
     cv : int or scikit-learn splitter, default 5
-        Row cross-validation. An int ``k`` means ``KFold(k, shuffle=True,
-        random_state=random_state)``. Defines the held-out samples for every
+        Row cross-validation. An int `k` means `KFold(k, shuffle=True,
+        random_state=random_state)`. Defines the held-out samples for every
         procedure.
     n_var_blocks : int, default 7
-        Number of variable (column) folds for ``ekf``/``cekf``/``em``
-        (>= 2). Ignored by ``rkf``. Columns are split with ``KFold``.
+        Number of variable (column) folds for `ekf`/`cekf`/`em`
+        (>= 2). Ignored by `rkf`. Columns are split with `KFold`.
     preprocessor : scikit-learn transformer or None, default None
         Preprocessing applied before PCA. It is cloned and refit inside every
         fold (and for the final refit), so no information leaks from held-out
         samples into the preprocessing. May be a single transformer or a
-        transformer ``Pipeline`` (e.g. ``make_pipeline(SNV(), StandardScaler())``).
-        Supersedes ``scale`` when not None. Not supported with
-        ``val_procedure='em'`` (see ``scale``).
+        transformer `Pipeline` (e.g. `make_pipeline(SNV(), StandardScaler())`).
+        Supersedes `scale` when not None. Not supported with
+        `val_procedure='em'` (see `scale`).
     scale : bool, default True
-        Shortcut used only when ``preprocessor is None``: ``True`` prepends a
-        ``StandardScaler`` (unit-variance scaling), ``False`` applies no
-        preprocessing. For ``val_procedure='em'`` this flag controls whether
-        the in-fold, observed-only preprocessing is autoscaling (``True``) or
-        mean-centering only (``False``). PCA mean-centers in either case.
+        Shortcut used only when `preprocessor is None`: `True` prepends a
+        `StandardScaler` (unit-variance scaling), `False` applies no
+        preprocessing. For `val_procedure='em'` this flag controls whether
+        the in-fold, observed-only preprocessing is autoscaling (`True`) or
+        mean-centering only (`False`). PCA mean-centers in either case.
     selection : {'min', '1se'}, default 'min'
-        ``'min'`` picks the component count minimising the mean CV error.
-        ``'1se'`` picks the smallest count whose mean CV error is within one
+        `'min'` picks the component count minimising the mean CV error.
+        `'1se'` picks the smallest count whose mean CV error is within one
         standard error of the minimum (parsimonious; useful for the monotone
-        ``rkf`` curve).
+        `rkf` curve).
     refit : bool, default True
-        If True, refit on the full data with ``n_components_`` components and
-        expose the transformer interface and ``best_estimator_``.
+        If True, refit on the full data with `n_components_` components and
+        expose the transformer interface and `best_estimator_`.
     em_max_iter, em_tol : int, float
-        EM convergence controls (``em`` only).
+        EM convergence controls (`em` only).
     random_state : int or None, default None
-        Seed for ``KFold`` shuffling (row and column folds) when ints are
+        Seed for `KFold` shuffling (row and column folds) when ints are
         passed.
 
     Attributes
@@ -162,11 +162,11 @@ class PCACV(TransformerMixin, BaseEstimator):
     mean_cv_error_, std_cv_error_ : ndarray
         Mean and std (across folds) of the per-sample PRESS for each candidate.
     cv_results_ : dict
-        ``{'n_components', 'mean_cv_error', 'std_cv_error'}``.
+        `{'n_components', 'mean_cv_error', 'std_cv_error'}`.
     best_estimator_ : Pipeline
-        Full-data refit (if ``refit``).
+        Full-data refit (if `refit`).
     components_, mean_, explained_variance_, explained_variance_ratio_ :
-        Delegated from the refit PCA (if ``refit``).
+        Delegated from the refit PCA (if `refit`).
     n_features_in_ : int
         Number of features seen during fit.
     """
@@ -201,7 +201,7 @@ class PCACV(TransformerMixin, BaseEstimator):
     # Fitting
     # ------------------------------------------------------------------
     def fit(self, X, y=None) -> "PCACV":
-        """Run the cross-validation, select ``n_components_``, optionally refit."""
+        """Run the cross-validation, select `n_components_`, optionally refit."""
         X = validate_data(self, X, accept_sparse=False, ensure_2d=True,
                            dtype=float, reset=True)
         N, M = X.shape
@@ -381,7 +381,7 @@ class PCACV(TransformerMixin, BaseEstimator):
     # Transformer interface (delegates to the refit PCA)
     # ------------------------------------------------------------------
     def transform(self, X):
-        """Project ``X`` onto ``n_components_`` components."""
+        """Project `X` onto `n_components_` components."""
         check_is_fitted(self, "best_estimator_")
         X = validate_data(self, X, reset=False, dtype=float)
         return self.best_estimator_.transform(X)
@@ -405,14 +405,12 @@ class PCACV(TransformerMixin, BaseEstimator):
         fig, ax = plt.subplots(figsize=(8, 5))
         ax.errorbar(self.n_components_values_, self.mean_cv_error_,
                     yerr=self.std_cv_error_, marker="o", lw=1.8, capsize=3)
-        ax.axvline(self.n_components_, color="k", ls="--", lw=1.2,
-                   label=f"selected = {self.n_components_}")
-        ax.set_xlabel("# components")
-        ax.set_ylabel("CV error (per-sample PRESS)")
-        ax.set_title(f"PCACV ({self.val_procedure}, selection='{self.selection}')")
+        ax.set_xlabel("Nr. of components")
+        ax.set_ylabel("PRESS")
+        ax.set_title(f"PCACV ({self.val_procedure})")
         ax.set_xticks(self.n_components_values_)
-        ax.legend()
         fig.tight_layout()
+        plt.close(fig)   # avoid Jupyter double-render; the returned fig still displays
         return fig
 
     # ------------------------------------------------------------------
