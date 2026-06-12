@@ -27,7 +27,7 @@ References
 ----------
 - Camacho & Ferrer, J. Chemometrics 26(7), 2012, 361-373 (ekf, theory).
 - Camacho & Ferrer, Chemom. Intell. Lab. Syst. 131, 2014, 37-50 (cekf).
-- Bro, Kjeldahl, Smilde & Kiers, J. Chemometrics 22(5), 2008, 346-354
+- Bro, R., Kjeldahl, K., Smilde, A. K., & Kiers, H. A. L. (2008), 390(5), 1241-1251
   (EM cross-validation).
 """
 
@@ -410,7 +410,7 @@ class PCACV(TransformerMixin, BaseEstimator):
         ax.set_title(f"PCACV ({self.val_procedure})")
         ax.set_xticks(self.n_components_values_)
         fig.tight_layout()
-        plt.close(fig)   # avoid Jupyter double-render; the returned fig still displays
+        plt.close(fig)
         return fig
 
     # ------------------------------------------------------------------
